@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="insights-container">
+    <h2>Spending Insights</h2>
+
+    <!-- Month Selector -->
+    <form method="POST" action="{{ url_for('change_month') }}" style="margin-bottom: 20px; text-align: center;">
+        <label for="month">Select Month:</label>
+        <select name="month" id="month" onchange="this.form.submit()">
+            {% for month in available_months %}
+                <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div class="insight-box">
+        {% for entry in insights %}
+            {% set cleaned = entry.feedback.replace('**', '') %}
+            <div class="badge {{ entry.status }}">
+                <h3>{{ entry.category }}</h3>
+                <p><em>Spent: ${{ "%.2f"|format(entry.spent) }} | Budget: ${{ "%.2f"|format(budgets[entry.category]) }}</em></p>
+                <p>{{ cleaned }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.insights-container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+.insights-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.insight-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.badge {
+    padding: 20px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    border-left: 6px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.badge h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.badge p {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Color based on status */
+.badge.good {
+    border-color: #28a745;
+    background-color: #e6f4ea;
+}
+
+.badge.nearing {
+    border-color: #ffc107;
+    background-color: #fff8e1;
+}
+
+.badge.overspent {
+    border-color: #dc3545;
+    background-color: #fbeaea;
+}
+</style>
+{% endblock %}

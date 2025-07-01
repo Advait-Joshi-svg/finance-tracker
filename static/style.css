@@ -1,0 +1,159 @@
+/* static/style.css */
+
+/* Reset and base layout */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333333;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    color: #222222;
+}
+
+/* Main layout: sidebar + content */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 220px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #eeeeee;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s, padding 0.2s;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.sidebar ul li a:hover {
+    background-color: #3a5068;
+    text-decoration: none;
+}
+
+/* Main content area */
+main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #f5f7fa;
+}
+
+/* Dashboard grid layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Card styling */
+.card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: #333333;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Insights page specific */
+.insights-container {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+.insights-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #222222;
+}
+
+.insight-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.badge {
+    padding: 20px;
+    border-radius: 8px;
+    background: #f5f5f5;
+    border-left: 6px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
+
+.badge h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    color: #222222;
+}
+
+.badge p {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #555555;
+}
+
+/* Color badges based on budget performance */
+.badge.good {
+    border-color: #28a745;
+    background-color: #e6f4ea;
+}
+
+.badge.nearing {
+    border-color: #ffc107;
+    background-color: #fff8e1;
+}
+
+.badge.overspent {
+    border-color: #dc3545;
+    background-color: #fbeaea;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    background: #dddddd;
+    color: #555555;
+}

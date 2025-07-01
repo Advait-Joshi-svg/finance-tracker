@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-content">
+  <h2>Monthly Overview</h2>
+
+  <!-- Month Selector Form -->
+  <form method="POST" action="{{ url_for('change_month') }}" class="month-form">
+    <label for="month">Select Month:</label>
+    <select name="month" id="month" onchange="this.form.submit()">
+      <option value="">-- All Months --</option>  <!-- NEW -->
+      {% for month in available_months %}
+        <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  
+
+  <div class="dashboard-grid">
+    <!-- Summary Cards -->
+    <div class="card" onclick="openModal('budgetModal')">
+      <h4>Total Budget</h4>
+      <p>${{ "%.2f"|format(total_budget) }}</p>
+    </div>
+    <div class="card" onclick="openModal('spentModal')">
+      <h4>Total Spent</h4>
+      <p>${{ "%.2f"|format(total_spent) }}</p>
+    </div>
+    <div class="card" onclick="openModal('usedModal')">
+      <h4>Used</h4>
+      <p>{{ percent_used }}%</p>
+    </div>
+
+    <!-- LLM Summary -->
+    <div class="card" style="grid-column: span 2;" onclick="openModal('summaryModal')">
+      <h4>LLM Summary</h4>
+      <p>{{ summary[:300] }}{% if summary|length > 300 %}...<em>(click to view full)</em>{% endif %}</p>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="card" onclick="openModal('barChartModal')">
+      <h4>Spending vs Budget</h4>
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="card" onclick="openModal('donutChartModal')">
+      <h4>Category Breakdown</h4>
+      <canvas id="donutChart"></canvas>
+    </div>
+
+    <!-- Feedback Cards -->
+    <div class="card" style="grid-column: span 2;" onclick="openModal('feedbackModal')">
+      <h4>Per-Category Feedback</h4>
+      {% for cat, usage in category_usage.items() %}
+        {% set status = 'overspent' if usage.spent > usage.budget else 'under' %}
+        <div class="insight-card {{ status }}">
+          <strong>{{ cat }}</strong><br>
+          Spent: ${{ "%.2f"|format(usage.spent) }} / Budget: ${{ "%.2f"|format(usage.budget) }}<br>
+          Usage: {{ usage.percent }}%
+        </div>
+        
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const budgets = {{ budgets | tojson | safe }};
+  const spending = {{ spending | tojson | safe }};
+  const categories = Object.keys(budgets);
+  const spentData = categories.map(cat => spending[cat] || 0);
+  const budgetData = categories.map(cat => budgets[cat]);
+  
+  // Smooth blue gradients for donut
+  const donutColors = [
+    '#d0e8ff', '#a8d0ff', '#7fb8ff', '#57a0ff', '#2e88ff'
+  ];
+  
+  // Softer bar chart colors
+  const barSpentColor = '#74c0fc';  // lighter blue
+  const barBudgetColor = '#ff99ac'; // light coral pink
+  
+  new Chart(document.getElementById("barChart"), {
+    type: 'bar',
+    data: {
+      labels: categories,
+      datasets: [
+        { label: "Spent", data: spentData, backgroundColor: barSpentColor },
+        { label: "Budget", data: budgetData, backgroundColor: barBudgetColor }
+      ]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+  
+  new Chart(document.getElementById("donutChart"), {
+    type: 'doughnut',
+    data: {
+      labels: categories,
+      datasets: [{
+        data: spentData,
+        backgroundColor: donutColors
+      }]
+    },
+    options: {
+      plugins: { legend: { position: 'right' } },
+      cutout: '65%'
+    }
+  });
+  </script>
+  
+
+<!-- Modal Templates -->
+{% for modal_id, modal_title, modal_content in [
+  ('budgetModal', 'Total Budget', 'Total Budget: $' ~ ("%.2f"|format(total_budget))),
+  ('spentModal', 'Total Spent', 'Total Spent: $' ~ ("%.2f"|format(total_spent))),
+  ('usedModal', 'Used Percentage', percent_used ~ '% used'),
+  ('summaryModal', 'LLM Summary', summary),
+  ('feedbackModal', 'Per-Category Feedback', 'feedback_block')
+] %}
+<div class="modal" id="{{ modal_id }}" onclick="closeModal('{{ modal_id }}')">
+  <div class="modal-content" onclick="event.stopPropagation();">
+    <span class="close-btn" onclick="closeModal('{{ modal_id }}')">&times;</span>
+    <h3>{{ modal_title }}</h3>
+    {% if modal_content == 'feedback_block' %}
+      {% for cat, usage in category_usage.items() %}
+        {% set status = 'overspent' if usage.spent > usage.budget else 'under' %}
+        <div class="insight-card {{ status }}">
+          <strong>{{ cat }}</strong><br>
+          Spent: ${{ "%.2f"|format(usage.spent) }} / ${{ "%.2f"|format(usage.budget) }}<br>
+          Usage: {{ usage.percent }}%
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>{{ modal_content }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<!-- Modal Handling -->
+<script>
+function openModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+function closeModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+</script>
+
+<!-- Modal CSS -->
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* Insight Cards */
+  .insight-card {
+    background: #f9f9f9;
+    border-left: 6px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: 0.3s;
+  }
+  
+  .insight-card.overspent {
+    border-color: #dc3545;
+    background: #fbeaea;
+  }
+  
+  .insight-card.under {
+    border-color: #28a745;
+    background: #e6f4ea;
+  }
+  
+  .insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  </style>
+  
+
+{% endblock %}

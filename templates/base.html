@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finance Tracker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+body {
+  background-color: #f5f7fa;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #333;
+}
+
+main {
+  padding: 2rem;
+}
+</style>
+
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <h2>Finance Tracker</h2>
+      <ul>
+        <li><a href="{{ url_for('landing') }}">Home</a></li>
+        <li><a href="{{ url_for('upload_page') }}">Import Data</a></li>
+        <li><a href="/insights">Per-Category Summary</a></li>
+        <li><a href="{{ url_for('recommend_budgets') }}">Get Budget Recommendations</a></li>
+        <li><a href="{{ url_for('transactions_page') }}">Report</a></li>
+        <li><a href="{{ url_for('spending_chart') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('dashboard') }}">Overview</a></li>
+
+
+
+      </ul>
+    </div>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <footer>
+    &copy; 2025 Finance Tracker
+  </footer>
+</body>
+</html>
+

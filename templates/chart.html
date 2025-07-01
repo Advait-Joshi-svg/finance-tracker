@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chart-container">
+  <h2>Dashboard</h2>
+
+  <canvas id="chart" width="400" height="400"></canvas>
+</div>
+
+<script id="spending-data" type="application/json">{{ spending | tojson }}</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const spending = JSON.parse(document.getElementById('spending-data').textContent);
+  const labels = Object.keys(spending);
+  const values = Object.values(spending);
+
+  const ctx = document.getElementById('chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: [
+          '#FFB300', // Mustard
+          '#FFC107', // Amber
+          '#FFD54F', // Light Mustard
+          '#FFECB3', // Pale Yellow
+          '#FFF8E1'  // Cream
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { size: 14 }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<style>
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+</style>
+{% endblock %}

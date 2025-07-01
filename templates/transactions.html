@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="transactions-container">
+  <h2>Detailed Monthly Report</h2>
+
+  <!-- Month Selector -->
+  <form method="POST" action="{{ url_for('change_month') }}" style="margin-bottom: 20px; text-align: center;">
+    <label for="month"><strong>Select Month:</strong></label>
+    <select name="month" id="month" onchange="this.form.submit()">
+      {% for month in available_months %}
+        <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <!-- Top Bar: Filter and Download -->
+  <div class="top-bar">
+    <div>
+      <label for="categoryFilter"><strong>Filter by Category:</strong></label>
+      <select id="categoryFilter">
+        <option value="">All</option>
+        {% for cat in spending.keys() %}
+          <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <a href="{{ url_for('download_transactions') }}" class="download-btn">⬇️ Download CSV</a>
+  </div>
+
+  <!-- Transactions Table -->
+  <div style="overflow-x: auto;">
+    <table id="transactionsTable" class="display">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Amount ($)</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in transactions %}
+        <tr>
+          <td>{{ row.Date }}</td>
+          <td>{{ row.Description }}</td>
+          <td>{{ "%.2f"|format(row.Amount) }}</td>
+          <td>{{ row.Category }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DataTables and Script -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function () {
+  const table = $('#transactionsTable').DataTable();
+
+  $('#categoryFilter').on('change', function () {
+    const value = $(this).val();
+    table.column(3).search(value).draw();
+  });
+});
+</script>
+
+<!-- Styles -->
+<style>
+.transactions-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.download-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+.download-btn:hover {
+  background-color: #0056b3;
+}
+</style>
+{% endblock %}

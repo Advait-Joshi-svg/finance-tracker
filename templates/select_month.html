@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Select Month</h2>
+  <form method="POST" action="{{ url_for('filter_month') }}">
+    <label for="month">Available Months:</label>
+    <select name="month" id="month" required>
+      {% for month in months %}
+        <option value="{{ month }}">{{ month }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Continue</button>
+  </form>
+</div>
+
+<style>
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    text-align: center;
+}
+select {
+    padding: 10px;
+    font-size: 16px;
+    margin: 20px;
+}
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+</style>
+{% endblock %}

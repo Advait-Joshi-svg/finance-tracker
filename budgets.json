@@ -1,0 +1,37 @@
+{
+  "2025-01": {
+    "Food": 1000.0,
+    "Transportation": 1000.0,
+    "Entertainment": 1000.0,
+    "Shopping": 1000.0,
+    "Other": 1000.0
+  },
+  "2025-04": {
+    "Food": 1000.0,
+    "Transportation": 1000.0,
+    "Entertainment": 1000.0,
+    "Shopping": 1000.0,
+    "Other": 1000.0
+  },
+  "2025-02": {
+    "Food": 350.0,
+    "Transportation": 200.0,
+    "Entertainment": 1000.0,
+    "Shopping": 200.0,
+    "Other": 200.0
+  },
+  "2025-03": {
+    "Food": 300.0,
+    "Transportation": 180.0,
+    "Entertainment": 1000.0,
+    "Shopping": 190.0,
+    "Other": 180.0
+  },
+  "2025-05": {
+    "Food": 900.0,
+    "Transportation": 950.0,
+    "Entertainment": 600.0,
+    "Shopping": 1000.0,
+    "Other": 700.0
+  }
+}

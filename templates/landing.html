@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-hero">
+  <h1>Take Control of <span class="text-gradient">Your Money</span></h1>
+  <p class="subtitle">Track spending, set budgets, and get AI-powered insights.</p>
+  <a href="{{ url_for('upload_page') }}" class="cta-button">Get Started →</a>
+</div>
+
+<style>
+  .landing-hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .text-gradient {
+    background: linear-gradient(to right, #4361ee, #f72585);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .cta-button {
+    display: inline-block;
+    background: linear-gradient(to right, #4361ee, #3a0ca3);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+</style>
+{% endblock %}

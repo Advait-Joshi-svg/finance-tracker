@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="upload-container">
+  <div class="upload-card">
+    <h2>Import Your Financial Data</h2>
+
+    <p class="subtext">Supported formats: CSV, Excel</p>
+    
+    <form 
+      action="{{ url_for('process_upload') }}" 
+      method="POST" 
+      enctype="multipart/form-data"
+      class="dropzone"
+    >
+      <div class="upload-area" id="uploadArea">
+        <input type="file" name="file" id="file" accept=".csv" required>
+        <label for="file" id="fileLabel">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="#4361ee">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          <p id="uploadText">Drag & drop files or <span>browse</span></p>
+        </label>
+      </div>
+      <button type="submit" class="upload-button">
+        Process Transactions
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('file').addEventListener('change', function () {
+  const file = this.files[0];
+  if (file) {
+    const uploadText = document.getElementById('uploadText');
+    uploadText.innerHTML = `<strong>${file.name}</strong> uploaded successfully.`;
+  }
+});
+</script>
+
+<style>
+.upload-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.upload-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.subtext {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.upload-area {
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s;
+}
+
+.upload-area:hover {
+  border-color: #4361ee;
+  background: rgba(67, 97, 238, 0.05);
+}
+
+input[type="file"] {
+  display: none;
+}
+
+label[for="file"] {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+label[for="file"] span {
+  color: #4361ee;
+  font-weight: 600;
+}
+
+.upload-button {
+  width: 100%;
+  background: linear-gradient(to right, #4361ee, #3a0ca3);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+</style>
+{% endblock %}

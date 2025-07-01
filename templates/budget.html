@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="budget-card">
+  <h2>Set Your Budgets</h2>
+  <form action="{{ url_for('set_budget') }}" method="POST">
+    {% for category in ["Food", "Transportation", "Entertainment", "Shopping", "Other"] %}
+    <div class="input-group">
+      <label>{{ category }}</label>
+      <input 
+        type="number" 
+        name="{{ category.lower() }}" 
+        placeholder="$" 
+        required
+      >
+    </div>
+    {% endfor %}
+    <button type="submit" class="submit-btn">Save Budgets</button>
+    <button type="button" id="suggestBtn" class="suggest-button">Suggest Budgets</button>
+  </form>
+</div>
+
+<script>
+document.getElementById('suggestBtn').addEventListener('click', function () {
+  fetch("/suggest_budget", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      alert("Error: " + data.error);
+    } else {
+      for (const [category, value] of Object.entries(data)) {
+        const input = document.querySelector(`input[name="${category.toLowerCase()}"]`);
+        if (input) input.value = value;
+      }
+    }
+  })
+  .catch(err => {
+    alert("Failed to fetch budget suggestions.");
+    console.error(err);
+  });
+});
+</script>
+
+<style>
+  .budget-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    max-width: 500px;
+    margin: 2rem auto;
+  }
+
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+
+  input:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  }
+
+  .submit-btn,
+  .suggest-button {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+
+  .submit-btn {
+    background: linear-gradient(to right, #4361ee, #3a0ca3);
+    color: white;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+  }
+
+  .suggest-button {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .suggest-button:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+  }
+</style>
+{% endblock %}
