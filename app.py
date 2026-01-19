@@ -15,7 +15,6 @@ app.secret_key = 'secret-key-for-session'
 raw_uploaded_df = None
 BUDGETS_FILE = 'budgets.json'
 
-# ---------- OpenAI Key ----------
 def get_api_key():
     try:
         with open("config.json") as f:
@@ -37,7 +36,6 @@ def save_budgets(budgets):
     with open(BUDGETS_FILE, 'w') as f:
         json.dump(budgets, f, indent=2)
 
-# ---------- Transactions and Budgets Loader ----------
 def load_transactions_for_month(selected_month):
     df = pd.read_csv(f'processed_{selected_month}.csv')
     return df.to_dict(orient='records')
@@ -50,7 +48,6 @@ def calculate_spending(selected_month):
     df = pd.read_csv(f'processed_{selected_month}.csv')
     return df.groupby('Category')['Amount'].sum().to_dict()
 
-# ---------- LLM ----------
 def query_llm(prompt_text):
     try:
         client = openai.OpenAI(api_key=get_api_key())
@@ -123,17 +120,15 @@ def accept_recommendations():
         budgets[next_month] = new_budgets
         save_budgets(budgets)
 
-        # --- KEY CHANGE: Update session to next month ---
         session['selected_month'] = next_month
 
         flash(f"New recommended budgets saved for {next_month}!", "success")
-        return redirect(url_for('dashboard'))  # Dashboard will now load next month
+        return redirect(url_for('dashboard'))  
     except Exception as e:
         flash(f"Error saving new budgets: {str(e)}", "error")
         return redirect(url_for('dashboard'))
 
 
-# ---------- Categorization ----------
 def clean_response_lines(response, expected_count):
     valid_categories = {"Food", "Transportation", "Entertainment", "Shopping", "Other"}
     if not response:
@@ -181,7 +176,6 @@ def categorize_expenses_batch(descriptions, batch_size=5):
         all_categories.extend(categories)
     return all_categories
 
-# ---------- Routes ----------
 @app.route('/')
 def landing():
     return render_template('landing.html')
@@ -260,7 +254,6 @@ def recommend_budgets():
             flash('Please set budgets first for this month.', 'error')
             return redirect(url_for('budget_page'))
 
-        # Calculate actual spending per category
         actual_spending = {}
         for t in transactions:
             category = t['Category']
@@ -355,7 +348,7 @@ def insights_page():
                 "status": status
             })
 
-        available_months = sorted(load_budgets().keys())  # ✅ Needed for dropdown
+        available_months = sorted(load_budgets().keys()) 
 
         return render_template('insights.html',
             insights=insights,
@@ -447,7 +440,6 @@ def dashboard():
             } for cat in budgets
         }
 
-        # ✅ Correct LLM prompt using f-string
         overall_prompt = (
             f"You are a friendly personal finance coach helping users improve their budgeting habits.\n\n"
             f"The user has set a total monthly budget of ${total_budget:.2f} across categories like Food, Transportation, Entertainment, Shopping, and Other.\n\n"
@@ -465,7 +457,7 @@ def dashboard():
 
         summary = query_llm(overall_prompt)
 
-        available_months = sorted(load_budgets().keys())  # ✅ Added this line
+        available_months = sorted(load_budgets().keys())  
 
         return render_template('dashboard.html',
             total_budget=total_budget,
@@ -476,8 +468,8 @@ def dashboard():
             budgets=budgets,
             spending=spending,
             transactions=df.to_dict(orient='records'),
-            available_months=available_months,   # ✅ Added
-            selected_month=selected_month        # ✅ Added
+            available_months=available_months,   
+            selected_month=selected_month        
         )
 
     except Exception as e:
@@ -499,3 +491,4 @@ def change_month():
 # ---------- Main ----------
 if __name__ == '__main__':
     app.run(debug=True)
+
